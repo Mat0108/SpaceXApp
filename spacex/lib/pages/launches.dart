@@ -229,13 +229,17 @@ class _LaunchesPageState extends State<LaunchesPage> {
                 children: [
                   SizedBox(height: 16.0),
                   Expanded(
-                    child: ListView.builder(
+                    child: ListView.separated(
                       itemCount: Launches.length,
+                      separatorBuilder: (BuildContext context, int index) =>
+                          const SizedBox(height: 4),
                       itemBuilder: (BuildContext context, int index) {
                         return Card(
                           child: ListTile(
                             title: Text(
-                                'Nom de la mission : ${Launches[index].name}'),
+                                'Nom de la mission : ${Launches[index].name}',
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold)),
                             subtitle: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -244,6 +248,11 @@ class _LaunchesPageState extends State<LaunchesPage> {
                                 Text(
                                     'Rocket name : ${Launches[index].rocket?.name}'),
                                 const SizedBox(height: 10),
+                                const Text(
+                                  "Information sur les moteurs :",
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                const SizedBox(height: 8),
                                 Row(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
@@ -261,7 +270,9 @@ class _LaunchesPageState extends State<LaunchesPage> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.center,
                                       children: [
-                                        const Text("Type et nb moteur"),
+                                        const Text(
+                                          "Type et nb moteur",
+                                        ),
                                         Text(
                                             '${Launches.first.rocket?.firststage?.engines.type ?? ""} ${Launches.first.rocket?.firststage?.engines.number ?? ""}'),
                                         Text(
@@ -294,12 +305,20 @@ class _LaunchesPageState extends State<LaunchesPage> {
                                     )
                                   ],
                                 ),
-                                const SizedBox(height: 10),
+                                const SizedBox(height: 12),
                                 Launches[index].capsule?.lastupdate != null
                                     ? Column(
                                         mainAxisAlignment:
                                             MainAxisAlignment.start,
                                         children: [
+                                            Container(
+                                                width: 300,
+                                                child: const Text(
+                                                    "Information sur la capsule :",
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold))),
+                                            const SizedBox(height: 2),
                                             Container(
                                                 width: 300,
                                                 child: Text(
@@ -315,7 +334,7 @@ class _LaunchesPageState extends State<LaunchesPage> {
                             leading: (Launches[index].patchSmall != null &&
                                     Launches[index].patchSmall != "")
                                 ? Image.network(Launches[index].patchSmall!)
-                                : SizedBox(),
+                                : const SizedBox(),
                           ),
                         );
                       },

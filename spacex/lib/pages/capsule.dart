@@ -61,22 +61,24 @@ class _CapsulesPageState extends State<CapsulesPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
             Expanded(
-              child: ListView.builder(
+              child: ListView.separated(
                 itemCount: capsules.length,
+                separatorBuilder: (BuildContext context, int index) =>
+                    const SizedBox(height: 4),
                 itemBuilder: (BuildContext context, int index) {
                   return Card(
                     child: Padding(
-                      padding: EdgeInsets.all(16.0),
+                      padding: const EdgeInsets.all(16.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             'Capsule: ${capsules[index].type}',
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                            style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
-                          SizedBox(height: 8.0),
+                          const SizedBox(height: 8.0),
                           if (capsules[index].lastUpdate != "" &&
                               capsules[index].lastUpdate !=
                                   "Location and status unknown")
