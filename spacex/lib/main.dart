@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import './pages/capsule.dart';
 import './pages/launches.dart';
 
 void main() {
@@ -15,6 +16,7 @@ class MyApp extends StatelessWidget {
       ),
       home: HomePage(),
       routes: {
+        '/capsule': (context) => const CapsulesPage(),
         '/launches': (context) => const LaunchesPage(),
       },
     );
