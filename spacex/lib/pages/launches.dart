@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:spacex/color.dart';
+
 class Engines {
   final num number;
   final String type;
@@ -160,10 +162,10 @@ class _LaunchesPageState extends State<LaunchesPage> {
   @override
   void initState() {
     super.initState();
-    getLaunches();
+    fetchData();
   }
 
-  Future<void> getLaunches() async {
+  Future<void> fetchData() async {
     setState(() {
       isLoading = true;
     });
@@ -180,16 +182,13 @@ class _LaunchesPageState extends State<LaunchesPage> {
       List<dynamic> data = jsonDecode(responseLaunches.body);
       List<dynamic> rocketsData = jsonDecode(responseRockets.body);
       List<dynamic> capsulesData = jsonDecode(responseCapsules.body);
-      // Créer une liste de Rocket à partir des données des fusées
       List<Rocket> rockets =
           rocketsData.map((rocketData) => Rocket.fromJson(rocketData)).toList();
       List<Capsule> capsules = capsulesData
           .map((capsuleData) => Capsule.fromJson(capsuleData))
           .toList();
-      // Créer une liste de Launch à partir des données des lancements en associant chaque lancement à sa fusée correspondante
       List<Launch> launches = [];
       for (dynamic launchData in data) {
-        // Trouver la Rocket correspondante dans la liste des fusées en utilisant l'ID du rocket du lancement
         String rocketId = launchData["rocket"];
         Rocket? rocket = rockets.firstWhere((rocket) => rocket.id == rocketId);
         if (launchData["capsules"] != null &&
@@ -197,14 +196,11 @@ class _LaunchesPageState extends State<LaunchesPage> {
           String capsuleId = launchData["capsules"][0];
           Capsule? capsule =
               capsules.firstWhere((capsule) => capsule.id == capsuleId);
-
-          // Si une Rocket correspondante est trouvée, créer un objet Launch et l'ajouter à la liste des lancements
           launches.add(Launch.fromJsonRC(launchData, rocket, capsule));
         } else {
           launches.add(Launch.fromJsonR(launchData, rocket));
         }
       }
-      // Mettre à jour l'état avec la liste des lancements associée aux fusées correspondantes
       setState(() {
         Launches = launches;
         isLoading = false;
@@ -217,9 +213,7 @@ class _LaunchesPageState extends State<LaunchesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Liste des Launches'),
-      ),
+      backgroundColor: AppColors.background,
       body: Container(
         padding: EdgeInsets.all(16.0),
         child: isLoading
@@ -227,7 +221,7 @@ class _LaunchesPageState extends State<LaunchesPage> {
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(height: 16.0),
+                  SizedBox(height: 8.0),
                   Expanded(
                     child: ListView.separated(
                       itemCount: Launches.length,
@@ -235,22 +229,30 @@ class _LaunchesPageState extends State<LaunchesPage> {
                           const SizedBox(height: 4),
                       itemBuilder: (BuildContext context, int index) {
                         return Card(
+                          color: AppColors.card,
                           child: ListTile(
                             title: Text(
                                 'Nom de la mission : ${Launches[index].name}',
                                 style: const TextStyle(
-                                    fontWeight: FontWeight.bold)),
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.text)),
                             subtitle: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                    'Flight number : ${Launches[index].flightNumber} - Launch year : ${Launches[index].launchYear}'),
+                                    'Flight number : ${Launches[index].flightNumber} - Launch year : ${Launches[index].launchYear}',
+                                    style:
+                                        const TextStyle(color: AppColors.text)),
                                 Text(
-                                    'Rocket name : ${Launches[index].rocket?.name}'),
+                                    'Rocket name : ${Launches[index].rocket?.name}',
+                                    style:
+                                        const TextStyle(color: AppColors.text)),
                                 const SizedBox(height: 10),
                                 const Text(
                                   "Information sur les moteurs :",
-                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: AppColors.text),
                                 ),
                                 const SizedBox(height: 8),
                                 Row(
@@ -261,8 +263,12 @@ class _LaunchesPageState extends State<LaunchesPage> {
                                           CrossAxisAlignment.center,
                                       children: [
                                         Text(" "),
-                                        Text("1 étage"),
-                                        Text("2 étage"),
+                                        Text("1 étage",
+                                            style: const TextStyle(
+                                                color: AppColors.text)),
+                                        Text("2 étage",
+                                            style: const TextStyle(
+                                                color: AppColors.text)),
                                       ],
                                     ),
                                     const SizedBox(width: 10),
@@ -270,13 +276,17 @@ class _LaunchesPageState extends State<LaunchesPage> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.center,
                                       children: [
-                                        const Text(
-                                          "Type et nb moteur",
-                                        ),
+                                        const Text("Type et nb moteur",
+                                            style: const TextStyle(
+                                                color: AppColors.text)),
                                         Text(
-                                            '${Launches.first.rocket?.firststage?.engines.type ?? ""} ${Launches.first.rocket?.firststage?.engines.number ?? ""}'),
+                                            '${Launches.first.rocket?.firststage?.engines.type ?? ""} ${Launches.first.rocket?.firststage?.engines.number ?? ""}',
+                                            style: const TextStyle(
+                                                color: AppColors.text)),
                                         Text(
-                                            '${Launches.first.rocket?.secondstage?.engines.type ?? ""} ${Launches.first.rocket?.secondstage?.engines.number ?? ""}'),
+                                            '${Launches.first.rocket?.secondstage?.engines.type ?? ""} ${Launches.first.rocket?.secondstage?.engines.number ?? ""}',
+                                            style: const TextStyle(
+                                                color: AppColors.text)),
                                       ],
                                     ),
                                     const SizedBox(width: 10),
@@ -284,11 +294,17 @@ class _LaunchesPageState extends State<LaunchesPage> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.center,
                                       children: [
-                                        const Text("isp"),
+                                        const Text("isp",
+                                            style: const TextStyle(
+                                                color: AppColors.text)),
                                         Text(
-                                            '${Launches.first.rocket?.firststage?.burntimesec ?? ""}'),
+                                            '${Launches.first.rocket?.firststage?.burntimesec ?? ""}',
+                                            style: const TextStyle(
+                                                color: AppColors.text)),
                                         Text(
-                                            '${Launches.first.rocket?.secondstage?.burntimesec ?? ""}'),
+                                            '${Launches.first.rocket?.secondstage?.burntimesec ?? ""}',
+                                            style: const TextStyle(
+                                                color: AppColors.text)),
                                       ],
                                     ),
                                     const SizedBox(width: 10),
@@ -296,11 +312,17 @@ class _LaunchesPageState extends State<LaunchesPage> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.center,
                                       children: [
-                                        const Text("T fuel"),
+                                        const Text("T fuel",
+                                            style: TextStyle(
+                                                color: AppColors.text)),
                                         Text(
-                                            '${Launches.first.rocket?.firststage?.fuelamounttons ?? ""}'),
+                                            '${Launches.first.rocket?.firststage?.fuelamounttons ?? ""}',
+                                            style: const TextStyle(
+                                                color: AppColors.text)),
                                         Text(
-                                            '${Launches.first.rocket?.secondstage?.fuelamounttons ?? ""}'),
+                                            '${Launches.first.rocket?.secondstage?.fuelamounttons ?? ""}',
+                                            style: const TextStyle(
+                                                color: AppColors.text)),
                                       ],
                                     )
                                   ],
@@ -317,16 +339,23 @@ class _LaunchesPageState extends State<LaunchesPage> {
                                                     "Information sur la capsule :",
                                                     style: TextStyle(
                                                         fontWeight:
-                                                            FontWeight.bold))),
+                                                            FontWeight.bold,
+                                                        color:
+                                                            AppColors.text))),
                                             const SizedBox(height: 2),
                                             Container(
                                                 width: 300,
                                                 child: Text(
-                                                    'Capsule : ${Launches[index].capsule?.lastupdate}')),
+                                                    'Capsule : ${Launches[index].capsule?.lastupdate}',
+                                                    style: const TextStyle(
+                                                        color:
+                                                            AppColors.text))),
                                             Container(
                                                 width: 300,
                                                 child: Text(
-                                                    'status : ${Launches[index].capsule?.status} | type : ${Launches[index].capsule?.type} '))
+                                                    'status : ${Launches[index].capsule?.status} | type : ${Launches[index].capsule?.type} ',
+                                                    style: const TextStyle(
+                                                        color: AppColors.text)))
                                           ])
                                     : Container()
                               ],
