@@ -155,6 +155,8 @@ class LaunchesPage extends StatefulWidget {
 
 class _LaunchesPageState extends State<LaunchesPage> {
   List<Launch> Launches = [];
+  bool isLoading = true;
+
   @override
   void initState() {
     super.initState();
@@ -162,6 +164,10 @@ class _LaunchesPageState extends State<LaunchesPage> {
   }
 
   Future<void> getLaunches() async {
+    setState(() {
+      isLoading = true;
+    });
+
     final responseLaunches =
         await http.get(Uri.parse('https://api.spacexdata.com/v4/launches'));
     final responseRockets =
@@ -201,6 +207,7 @@ class _LaunchesPageState extends State<LaunchesPage> {
       // Mettre à jour l'état avec la liste des lancements associée aux fusées correspondantes
       setState(() {
         Launches = launches;
+        isLoading = false;
       });
     } else {
       throw Exception('Failed to load launches');
@@ -215,99 +222,107 @@ class _LaunchesPageState extends State<LaunchesPage> {
       ),
       body: Container(
         padding: EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: 16.0),
-            Expanded(
-              child: ListView.builder(
-                itemCount: Launches.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return Card(
-                    child: ListTile(
-                      title:
-                          Text('Nom de la mission : ${Launches[index].name}'),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                              'Flight number : ${Launches[index].flightNumber} - Launch year : ${Launches[index].launchYear}'),
-                          Text('Rocket name : ${Launches[index].rocket?.name}'),
-                          const SizedBox(height: 10),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Text(" "),
-                                  Text("1 étage"),
-                                  Text("2 étage"),
-                                ],
-                              ),
-                              const SizedBox(width: 10),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  const Text("Type et nb moteur"),
-                                  Text(
-                                      '${Launches.first.rocket?.firststage?.engines.type ?? ""} ${Launches.first.rocket?.firststage?.engines.number ?? ""}'),
-                                  Text(
-                                      '${Launches.first.rocket?.secondstage?.engines.type ?? ""} ${Launches.first.rocket?.secondstage?.engines.number ?? ""}'),
-                                ],
-                              ),
-                              const SizedBox(width: 10),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  const Text("isp"),
-                                  Text(
-                                      '${Launches.first.rocket?.firststage?.burntimesec ?? ""}'),
-                                  Text(
-                                      '${Launches.first.rocket?.secondstage?.burntimesec ?? ""}'),
-                                ],
-                              ),
-                              const SizedBox(width: 10),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  const Text("T fuel"),
-                                  Text(
-                                      '${Launches.first.rocket?.firststage?.fuelamounttons ?? ""}'),
-                                  Text(
-                                      '${Launches.first.rocket?.secondstage?.fuelamounttons ?? ""}'),
-                                ],
-                              )
-                            ],
-                          ),
-                          const SizedBox(height: 10),
-                          Launches[index].capsule?.lastupdate != null
-                              ? Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
+        child: isLoading
+            ? Center(child: CircularProgressIndicator())
+            : Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 16.0),
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: Launches.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return Card(
+                          child: ListTile(
+                            title: Text(
+                                'Nom de la mission : ${Launches[index].name}'),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                    'Flight number : ${Launches[index].flightNumber} - Launch year : ${Launches[index].launchYear}'),
+                                Text(
+                                    'Rocket name : ${Launches[index].rocket?.name}'),
+                                const SizedBox(height: 10),
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                      Container(
-                                          width: 300,
-                                          child: Text(
-                                              'Capsule : ${Launches[index].capsule?.lastupdate}')),
-                                      Container(
-                                          width: 300,
-                                          child: Text(
-                                              'status : ${Launches[index].capsule?.status} | type : ${Launches[index].capsule?.type} '))
-                                    ])
-                              : Container()
-                        ],
-                      ),
-                      leading: (Launches[index].patchSmall != null &&
-                              Launches[index].patchSmall != "")
-                          ? Image.network(Launches[index].patchSmall!)
-                          : SizedBox(),
+                                    const Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Text(" "),
+                                        Text("1 étage"),
+                                        Text("2 étage"),
+                                      ],
+                                    ),
+                                    const SizedBox(width: 10),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        const Text("Type et nb moteur"),
+                                        Text(
+                                            '${Launches.first.rocket?.firststage?.engines.type ?? ""} ${Launches.first.rocket?.firststage?.engines.number ?? ""}'),
+                                        Text(
+                                            '${Launches.first.rocket?.secondstage?.engines.type ?? ""} ${Launches.first.rocket?.secondstage?.engines.number ?? ""}'),
+                                      ],
+                                    ),
+                                    const SizedBox(width: 10),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        const Text("isp"),
+                                        Text(
+                                            '${Launches.first.rocket?.firststage?.burntimesec ?? ""}'),
+                                        Text(
+                                            '${Launches.first.rocket?.secondstage?.burntimesec ?? ""}'),
+                                      ],
+                                    ),
+                                    const SizedBox(width: 10),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        const Text("T fuel"),
+                                        Text(
+                                            '${Launches.first.rocket?.firststage?.fuelamounttons ?? ""}'),
+                                        Text(
+                                            '${Launches.first.rocket?.secondstage?.fuelamounttons ?? ""}'),
+                                      ],
+                                    )
+                                  ],
+                                ),
+                                const SizedBox(height: 10),
+                                Launches[index].capsule?.lastupdate != null
+                                    ? Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: [
+                                            Container(
+                                                width: 300,
+                                                child: Text(
+                                                    'Capsule : ${Launches[index].capsule?.lastupdate}')),
+                                            Container(
+                                                width: 300,
+                                                child: Text(
+                                                    'status : ${Launches[index].capsule?.status} | type : ${Launches[index].capsule?.type} '))
+                                          ])
+                                    : Container()
+                              ],
+                            ),
+                            leading: (Launches[index].patchSmall != null &&
+                                    Launches[index].patchSmall != "")
+                                ? Image.network(Launches[index].patchSmall!)
+                                : SizedBox(),
+                          ),
+                        );
+                      },
                     ),
-                  );
-                },
+                  ),
+                ],
               ),
-            ),
-          ],
-        ),
       ),
     );
   }
